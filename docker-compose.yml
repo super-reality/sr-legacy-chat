@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./src/chat_assistant/static:/django_static
+    ports:
+      - "80:80"
+    depends_on:
+      - chat_assistant
+  redis:
+    image: redis:alpine
+    expose:
+      - "6379"
+    restart: always
+  chat_assistant:
+    build: .
+    command: uwsgi --ini uwsgi.ini
+    working_dir: /code/src/chat_assistant
+    volumes:
+      - .:/code
+    expose:
+      - "8082"
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres-rasa
+      POSTGRES_DB: postgres-rasa
+      POSTGRES_PASS: admin123456
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+  celery:
+    build: .
+    command: celery -A chat_assistant worker -l info
+    working_dir: /code/src/chat_assistant
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+
