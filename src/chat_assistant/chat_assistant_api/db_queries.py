@@ -24,14 +24,14 @@ def get_all_assistant_intents(assistant_id, sentence_type):
     assistant_obj = Assistant.objects.filter(id=assistant_id).first()
     all_intents   = Intent.objects.filter(assistant_id=assistant_obj).all()
     if sentence_type == "example":
-        all_examples_with_intents = get_all_intent_sentences(all_intents, IntentExamples)
+        all_examples_with_intents = get_all_intent_sentences(all_intents, IntentExamples,'example_sentence')
         return all_examples_with_intents, assistant_obj.assistant_name
     elif sentence_type == "response":
-        all_responses_with_intents = get_all_intent_sentences(all_intents, Response)
+        all_responses_with_intents = get_all_intent_sentences(all_intents, Response,'response_sentence')
         return all_responses_with_intents, assistant_obj.assistant_name
 
 
-def get_all_intent_sentences(intent_objs, model_obj):
+def get_all_intent_sentences(intent_objs, model_obj, db_key):
     all_intent_examples = model_obj.objects.filter(intent_id__in=intent_objs)
     intent_list = [model_to_dict(intent) for intent in intent_objs]
     intent_dict = {}
@@ -40,6 +40,6 @@ def get_all_intent_sentences(intent_objs, model_obj):
     for _ex in all_intent_examples:
         example = model_to_dict(_ex)
         intent_name = next(item for item in intent_list if item['id'] == example['intent_id'])
-        intent_dict[intent_name['intent_name']].append(example['example_sentence'])
-    
+        intent_dict[intent_name['intent_name']].append(example[db_key])
+    # print("intent_dict ", intent_dict)
     return intent_dict
