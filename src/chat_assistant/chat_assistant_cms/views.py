@@ -11,6 +11,7 @@ import csv
 import json
 
 
+
 def cms(request):
     # Render the HTML template dashboard.html with the data in the context variable
     return render(request, 'dashboard.html')
@@ -101,7 +102,7 @@ def view_assistant(request, assistant_id):
                 'assistant_name'            : assistant_name
               }
 
-    # Render the HTML template index.html with the data in the context variable
+    # Render the HTML template view_assistant with the data in the context variable
     return render(request, 'view_assistant.html', context)
 
 

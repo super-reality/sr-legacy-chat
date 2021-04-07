@@ -9,7 +9,6 @@ def get_collectives(request):
         collective_list.append({
             collective_name: all_channels
         })
-    print("all collectives ===>", collective_list)
     return {
         'collective_list': collective_list
     }
