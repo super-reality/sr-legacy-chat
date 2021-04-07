@@ -20,19 +20,28 @@ def get_all_channel_assistants(collective_name, channel_name):
     return all_asistants
 
 
-def create_assistant(collective_name, channel_name, assistant_name, assistant_id):
-    channel_obj     = Channel.objects.filter(channel_name=channel_name, collective_id__collective_name=collective_name).first()
-    Assistant.objects.create(assistant_name=assistant_name, id=assistant_id, channel=channel_obj)
+def create_assistant(*args, **kwargs):
+    channel_obj     = Channel.objects.filter(
+                                                channel_name=kwargs.get('channel_name'),
+                                                collective_id__collective_name=kwargs.get('collective_name')
+                                            ).first()
+    Assistant.objects.create(
+                                assistant_name=kwargs.get('assistant_name'),
+                                id=kwargs.get('assistant_id'),
+                                channel=channel_obj
+                            )
 
 
-def create_assistant_example(assistant_id, intent, questions, responses):
-    # channel_obj     = Channel.objects.filter(channel_name=channel_name, collective_id__collective_name=collective_name).first()
-    assistant_obj   = Assistant.objects.filter(id=assistant_id).first()
-    intent_obj = Intent.objects.create(intent_name=intent, assistant_id=assistant_obj)
-    for question in questions:
+def create_assistant_example(**kwargs):
+    assistant_obj   = Assistant.objects.filter(id=kwargs.get('assistant_id')).first()
+    intent_obj = Intent.objects.create(
+                                        intent_name=kwargs.get('intent'),
+                                        assistant_id=assistant_obj
+                                        )
+    for question in kwargs.get('questions'):
         question = question.replace('"',"'")
         IntentExamples.objects.create(example_sentence=question, intent_id=intent_obj)
-    for response in responses:
+    for response in kwargs.get('responses'):
         response = response.replace('"',"'")
         Response.objects.create(response_sentence=response, intent_id=intent_obj)
 

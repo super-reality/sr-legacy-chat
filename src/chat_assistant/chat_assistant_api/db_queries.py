@@ -8,26 +8,26 @@ def get_all_intent_names(assistant_id):
     return list(all_intents)
 
 
-def get_all_assistant_intents(assistant_id, sentence_type):
+def get_all_assistant_intents(**kwargs):
     """ Get intents and its corresponding example or 
         response sentences from database.
     Args: 
         assistant_id: Id of an assistant.
-        sentence_type: if "example", returns intent and its example sententces. 
-                       if "response", resturns intent and its response sentences 
+        sentence_type: if "example_sentence", returns intent and its example sententces. 
+                       if "response_sentence", resturns intent and its response sentences 
                        from database.
     Returns:
         returns assistant name and example or response sentences
         depending on the argument sentence_type.
     
     """
-    assistant_obj = Assistant.objects.filter(id=assistant_id).first()
+    assistant_obj = Assistant.objects.filter(id=kwargs.get('assistant_id')).first()
     all_intents   = Intent.objects.filter(assistant_id=assistant_obj).all()
-    if sentence_type == "example":
-        all_examples_with_intents = get_all_intent_sentences(all_intents, IntentExamples,'example_sentence')
+    if kwargs.get('sentence_type') == "example_sentence":
+        all_examples_with_intents = get_all_intent_sentences(all_intents, IntentExamples, kwargs.get('sentence_type'))
         return all_examples_with_intents, assistant_obj.assistant_name
-    elif sentence_type == "response":
-        all_responses_with_intents = get_all_intent_sentences(all_intents, Response,'response_sentence')
+    elif kwargs.get('sentence_type') == "response_sentence":
+        all_responses_with_intents = get_all_intent_sentences(all_intents, Response, kwargs.get('sentence_type'))
         return all_responses_with_intents, assistant_obj.assistant_name
 
 

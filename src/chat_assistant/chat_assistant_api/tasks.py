@@ -78,11 +78,17 @@ def train_dialogue_model(training_data_folder,domain_path,config_file_path, outp
 
 
 @shared_task(name='train_assistant_task', bind=True)
-def train_assistant_task(self,assistant_id):
-    all_intent_examples,assistant_name = get_all_assistant_intents(assistant_id, 'example')
-    all_intent_responses,assistant_name = get_all_assistant_intents(assistant_id, 'response')
+def train_assistant_task(self, **kwargs):
+    all_intent_examples,assistant_name = get_all_assistant_intents(    
+                                                                        assistant_id=kwargs.get('assistant_id'),
+                                                                        sentence_type='example_sentence'
+                                                                    )
+    all_intent_responses,assistant_name = get_all_assistant_intents(    
+                                                                        assistant_id=kwargs.get('assistant_id'),
+                                                                        sentence_type='response_sentence'
+                                                                    )
 
-    all_intents = get_all_intent_names(assistant_id)
+    all_intents = get_all_intent_names(kwargs.get('assistant_id'))
     create_rasa_nlu(all_intent_examples)
     create_rasa_domain(all_intent_responses)
     create_rasa_stories(all_intents)
@@ -90,6 +96,6 @@ def train_assistant_task(self,assistant_id):
     training_data_folder = "rasa/data"
     config_file_path     = "rasa/config.yml"
     output_path			 = "rasa/models/"
-    model_name	 = assistant_id.replace(" ", "")
+    model_name	 = kwargs.get('assistant_id').replace(" ", "")
     train_dialogue_model(training_data_folder,domain_path,config_file_path, output_path,model_name)
     return "Training Completed"

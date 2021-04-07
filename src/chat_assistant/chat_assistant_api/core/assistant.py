@@ -193,7 +193,7 @@ class TrainAssistant(APIView):
 
         if serializer.is_valid():
             assistant_id = serializer.data.get('id')
-            task = train_assistant_task.delay(assistant_id)
+            task = train_assistant_task.delay(assistant_id=assistant_id)
 
             return JsonResponse({"response": task.task_id})
         else:
