@@ -37,7 +37,6 @@ def get_all_intent_sentences(intent_objs, model_obj):
     intent_dict = {}
     for intent in intent_list:
         intent_dict.update({intent['intent_name']:[]}) 
-    all_examples = []
     for _ex in all_intent_examples:
         example = model_to_dict(_ex)
         intent_name = next(item for item in intent_list if item['id'] == example['intent_id'])
