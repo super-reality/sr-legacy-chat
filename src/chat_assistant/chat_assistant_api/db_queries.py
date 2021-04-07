@@ -8,7 +8,7 @@ def get_all_intent_names(assistant_id):
     return list(all_intents)
 
 
-def get_all_intents_of_bot(assistant_id, sentence_type):
+def get_all_assistant_intents(assistant_id, sentence_type):
     """ Get intents and its corresponding example or 
         response sentences from database.
     Args: 
@@ -24,14 +24,14 @@ def get_all_intents_of_bot(assistant_id, sentence_type):
     assistant_obj = Assistant.objects.filter(id=assistant_id).first()
     all_intents   = Intent.objects.filter(assistant_id=assistant_obj).all()
     if sentence_type == "example":
-        all_examples_with_intents = get_all_example_sentences_of_intent(all_intents, IntentExamples)
+        all_examples_with_intents = get_all_intent_sentences(all_intents, IntentExamples)
         return all_examples_with_intents, assistant_obj.assistant_name
     elif sentence_type == "response":
-        all_responses_with_intents = get_all_responses_of_intent(all_intents, Response)
+        all_responses_with_intents = get_all_intent_sentences(all_intents, Response)
         return all_responses_with_intents, assistant_obj.assistant_name
 
 
-def get_all_sentences_of_intent(intent_objs,model_obj):
+def get_all_intent_sentences(intent_objs, model_obj):
     all_intent_examples = model_obj.objects.filter(intent_id__in=intent_objs)
     intent_list = [model_to_dict(intent) for intent in intent_objs]
     intent_dict = {}

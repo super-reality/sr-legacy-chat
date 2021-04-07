@@ -6,7 +6,7 @@ from rasa.train import train
 from celery import shared_task
 from django.views.decorators.csrf import csrf_exempt
 from .db_queries import (
-                            get_all_intents_of_bot, 
+                            get_all_assistant_intents, 
                             get_all_intent_names
                         )
 
@@ -79,8 +79,8 @@ def train_dialogue_model(training_data_folder,domain_path,config_file_path, outp
 
 @shared_task(name='train_assistant_task', bind=True)
 def train_assistant_task(self,assistant_id):
-    all_intent_examples,assistant_name = get_all_intents_of_bot(assistant_id, 'example')
-    all_intent_responses,assistant_name = get_all_intents_of_bot(assistant_id, 'response')
+    all_intent_examples,assistant_name = get_all_assistant_intents(assistant_id, 'example')
+    all_intent_responses,assistant_name = get_all_assistant_intents(assistant_id, 'response')
 
     all_intents = get_all_intent_names(assistant_id)
     create_rasa_nlu(all_intent_examples)

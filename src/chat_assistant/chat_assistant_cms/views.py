@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .db_queries import *
 import ast
 from chat_assistant_api.db_queries import (
-                                            get_all_intents_of_bot, 
+                                            get_all_assistant_intents, 
                                             get_all_intent_names, 
                                         )
 from django.views.decorators.csrf import csrf_exempt
@@ -63,8 +63,8 @@ def upload_examples_csv(request, assistant_id):
         response = row.get('Responses','')
         response_list =  [response]
         create_assistant_example(assistant_id, intent, questions_list, response_list)
-    all_intent_examples, assistant_name = get_all_intents_of_bot(assistant_id, 'example')
-    all_intent_responses, assistant_name = get_all_intents_of_bot(assistant_id, 'response')
+    all_intent_examples, assistant_name = get_all_assistant_intents(assistant_id, 'example')
+    all_intent_responses, assistant_name = get_all_assistant_intents(assistant_id, 'response')
     intent_example_response = []
     for intent, intent_examples in all_intent_examples.items():
         intent_responses = all_intent_responses[intent]
@@ -82,11 +82,11 @@ def upload_examples_csv(request, assistant_id):
 
 
 def view_assistant(request, assistant_id):
-    all_intent_examples, assistant_name   = get_all_intents_of_bot(
+    all_intent_examples, assistant_name   = get_all_assistant_intents(
                                                 assistant_id,
                                                 'example'
                                             )
-    all_intent_responses, assistant_name  = get_all_intents_of_bot(
+    all_intent_responses, assistant_name  = get_all_assistant_intents(
                                                 assistant_id,
                                                 'response'
                                             )
@@ -127,8 +127,8 @@ def add_example(request, assistant_id):
     questions = request.GET.getlist('questions')
     responses = request.GET.getlist('responses')
     create_assistant_example(assistant_id, intent, questions, responses)
-    all_intent_examples, assistant_name = get_all_intents_of_bot(assistant_id, 'example')
-    all_intent_responses , assistant_name = get_all_intents_of_bot(assistant_id, 'response')
+    all_intent_examples, assistant_name = get_all_assistant_intents(assistant_id, 'example')
+    all_intent_responses , assistant_name = get_all_assistant_intents(assistant_id, 'response')
     intent_example_response = []
     for intent, intent_examples in all_intent_examples.items():
         intent_responses = all_intent_responses[intent]
@@ -148,8 +148,8 @@ def add_example(request, assistant_id):
 
 def edit_assistant(request, assistant_id):
 
-    all_intent_examples, assistant_name = get_all_intents_of_bot(assistant_id, 'example')
-    all_intent_responses , assistant_name = get_all_intents_of_bot(assistant_id, 'response')
+    all_intent_examples, assistant_name = get_all_assistant_intents(assistant_id, 'example')
+    all_intent_responses , assistant_name = get_all_assistant_intents(assistant_id, 'response')
     intent_example_response = []
     for intent, intent_examples in all_intent_examples.items():
         intent_responses = all_intent_responses[intent]
