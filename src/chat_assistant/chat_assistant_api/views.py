@@ -31,7 +31,7 @@ logging.basicConfig(level="DEBUG")
 
 
 class TokenViewSet(viewsets.ViewSet):
-    """Checks email and password and returns an auth token."""
+    """Checks username and password and returns an auth token."""
 
     serializer_class = AuthTokenSerializer
     
@@ -48,7 +48,7 @@ class TokenViewSet(viewsets.ViewSet):
 
 
 class SessionViewSet(viewsets.ViewSet):
-    """Checks email and password and returns an auth token."""
+    """Checks username and password and creates a user session."""
 
     serializer_class = serializers.SessionSerializer
     
