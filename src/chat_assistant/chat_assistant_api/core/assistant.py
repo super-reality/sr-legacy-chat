@@ -14,10 +14,10 @@ from django.views.decorators.csrf import csrf_exempt
 from celery.result import AsyncResult
 from rasa.core.agent import Agent
 from rasa.utils.endpoints import EndpointConfig
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from ..tasks import train_assistant_task
 from .. import serializers
 from .. import models
+from ..apps import ProfilesApiConfig
 import torch
 import asyncio
 
@@ -235,11 +235,11 @@ class AskQuestion(APIView):
             if assistant_response and confidence >= 0.20:
                 return Response({assistant_id: assistant_response[0].get("text")})
             else:
-                tokenizer, model = load_tokenizer_and_model()
+                # tokenizer, model = load_tokenizer_and_model()
                 # Initialize history variable
                 chat_history_ids = None
                 chat_round = 0
-                response = generate_response(tokenizer, model, chat_round, chat_history_ids, question)
+                response = generate_response(ProfilesApiConfig.tokenizer, ProfilesApiConfig.model, chat_round, chat_history_ids, question)
                 return Response({assistant_id: response})
         else:
             return Response(
