@@ -136,4 +136,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+RASA_MODELS	= "rasa/models/"
+
 MODELS = 'microsoft/DialoGPT-large'
+
+ACTION_ENDPOINT = "http://localhost:5055/webhook"
+

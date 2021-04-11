@@ -12,8 +12,6 @@ from rest_framework.renderers import (
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from celery.result import AsyncResult
-from rasa.core.agent import Agent
-from rasa.utils.endpoints import EndpointConfig
 from ..tasks import train_assistant_task
 from .. import serializers
 from .. import models
@@ -24,11 +22,7 @@ import asyncio
 
 @csrf_exempt
 def get_assistant_response(assistant_id, question):
-    action_endpoint = "http://localhost:5055/webhook"
-    output_path	= "rasa/models/"
-    model_name	= assistant_id.replace(" ", "")
-    full_modal_path = output_path+model_name+".tar.gz"
-    agent = Agent.load(full_modal_path, action_endpoint=EndpointConfig(action_endpoint))
+    agent = ProfilesApiConfig.agents.get(assistant_id)
     if agent.is_ready():
         loop = asyncio.get_event_loop()
         reply = loop.run_until_complete(agent.handle_text(question))
@@ -37,19 +31,6 @@ def get_assistant_response(assistant_id, question):
 
         return reply, intent
 
-
-
-def load_tokenizer_and_model(model="microsoft/DialoGPT-large"):
-    """
-        Load tokenizer and model instance for some specific DialoGPT model.
-    """
-    # Initialize tokenizer and model
-    print("Loading model...")
-    tokenizer = AutoTokenizer.from_pretrained(model)
-    model = AutoModelForCausalLM.from_pretrained(model)
-    
-    # Return tokenizer and model
-    return tokenizer, model
 
 
 def generate_response(tokenizer, model, chat_round, chat_history_ids, question):
@@ -221,6 +202,7 @@ class AskQuestion(APIView):
 
         return Response({'message': 'Hello!', 'an_apiview': an_apiview})
 
+
     def post(self, request):
         """Create a hello message with our name."""
 
@@ -239,7 +221,7 @@ class AskQuestion(APIView):
                 # Initialize history variable
                 chat_history_ids = None
                 chat_round = 0
-                response = generate_response(ProfilesApiConfig.tokenizer, ProfilesApiConfig.model, chat_round, chat_history_ids, question)
+                response = generate_response(ProfilesApiConfig.tokenizer, ProfilesApiConfig.gpt_model, chat_round, chat_history_ids, question)
                 return Response({assistant_id: response})
         else:
             return Response(
